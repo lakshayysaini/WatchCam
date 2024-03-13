@@ -3,7 +3,7 @@
 import { ModeToggle } from "@/components/theme-toggle";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
-import { FlipHorizontal } from "lucide-react";
+import { Camera, FlipHorizontal, PersonStanding, Video } from "lucide-react";
 import React, { useRef, useState } from "react";
 import Webcam from "react-webcam";
 
@@ -15,6 +15,8 @@ const HomePage = (props: Props) => {
 
   //states
   const [mirrored, setMirrored] = useState<boolean>(false);
+  const [isRecording, setIsRecording] = useState<boolean>(false);
+  const [autoRecordEnabled, setAutoRecordEnabled] = useState<boolean>(false);
 
   return (
     <div className="flex h-screen">
@@ -45,21 +47,58 @@ const HomePage = (props: Props) => {
             >
               <FlipHorizontal />
             </Button>
-            <Separator />
-          </div>
-          <div className="flex flex-col gap-2">
-            <Separator />
-
-            <Separator />
+            <Separator className="my-2" />
           </div>
 
           <div className="flex flex-col gap-2">
-            <Separator />
+            <Separator className="my-2" />
+
+            <Button
+              variant={"outline"}
+              size={"icon"}
+              onClick={userPromptScreenshot}
+            >
+              <Camera />
+            </Button>
+
+            <Button
+              variant={isRecording ? "destructive" : "outline"}
+              size={"icon"}
+              onClick={userPromptRecord}
+            >
+              <Video />
+            </Button>
+
+            <Separator className="my-2" />
+
+            <Button
+              variant={autoRecordEnabled ? "destructive" : "outline"}
+              size={"icon"}
+              onClick={toggleAutoRecord}
+            >
+              {autoRecordEnabled ? "" : <PersonStanding />}
+            </Button>
+          </div>
+
+          <div className="flex flex-col gap-2">
+            <Separator className="my-2" />
           </div>
         </div>
       </div>
     </div>
   );
+
+  function userPromptScreenshot() {}
+
+  function userPromptRecord() {}
+
+  function toggleAutoRecord() {
+    if (autoRecordEnabled) {
+      setAutoRecordEnabled(false);
+    } else {
+      setAutoRecordEnabled(true);
+    }
+  }
 };
 
 export default HomePage;
