@@ -6,6 +6,8 @@ import { Separator } from "@/components/ui/separator";
 import { Camera, FlipHorizontal, PersonStanding, Video } from "lucide-react";
 import React, { useRef, useState } from "react";
 import Webcam from "react-webcam";
+import { toast } from "sonner";
+import { Rings } from "react-loader-spinner";
 
 type Props = {};
 
@@ -76,7 +78,11 @@ const HomePage = (props: Props) => {
               size={"icon"}
               onClick={toggleAutoRecord}
             >
-              {autoRecordEnabled ? "" : <PersonStanding />}
+              {autoRecordEnabled ? (
+                <Rings color="white" height={45} />
+              ) : (
+                <PersonStanding />
+              )}
             </Button>
           </div>
 
@@ -95,8 +101,10 @@ const HomePage = (props: Props) => {
   function toggleAutoRecord() {
     if (autoRecordEnabled) {
       setAutoRecordEnabled(false);
+      toast("Autorecord disabled.");
     } else {
       setAutoRecordEnabled(true);
+      toast("Autorecord enabled.");
     }
   }
 };
