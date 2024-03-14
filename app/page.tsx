@@ -87,7 +87,8 @@ const HomePage = (props: Props) => {
           </div>
 
           <div className="flex flex-col gap-2">
-            <Separator className="my-2" />
+            <Separator className="my-2" />npx shadcn-ui@latest add popover
+
           </div>
         </div>
       </div>
