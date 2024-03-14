@@ -12,7 +12,7 @@ import {
   Video,
   Volume2,
 } from "lucide-react";
-import React, { useRef, useState } from "react";
+import React, { useRef, useState, useEffect } from "react";
 import Webcam from "react-webcam";
 import { toast } from "sonner";
 import { Rings } from "react-loader-spinner";
@@ -23,6 +23,10 @@ import {
 } from "@/components/ui/popover";
 import { Slider } from "@/components/ui/slider";
 import { beep } from "@/utils/audio";
+import * as cocossd from "@tensorflow-models/coco-ssd";
+import "@tensorflow/tfjs-backend-cpu";
+import "@tensorflow/tfjs-backend-webgl";
+import { ObjectDetection } from "@tensorflow-models/coco-ssd";
 
 type Props = {};
 
@@ -35,6 +39,26 @@ const HomePage = (props: Props) => {
   const [isRecording, setIsRecording] = useState<boolean>(false);
   const [autoRecordEnabled, setAutoRecordEnabled] = useState<boolean>(false);
   const [volume, setVolume] = useState(0.8);
+  const [model, setModel] = useState<ObjectDetection>();
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    setLoading(true);
+    initModel();
+  }, []);
+
+  const initModel = async () => {
+    const loadedModel: ObjectDetection = await cocossd.load({
+      base: "mobilenet_v2",
+    });
+    setModel(loadedModel);
+  };
+
+  useEffect(() => {
+    if (model) {
+      setLoading(false);
+    }
+  }, [model]);
 
   return (
     <div className="flex h-screen">
@@ -131,6 +155,11 @@ const HomePage = (props: Props) => {
           <RenderFeatureHighlightsSection />
         </div>
       </div>
+      {loading && (
+        <div className="z-50 absolute w-full h-full flex items-center justify-center bg-white text-black">
+          Getting things ready ... <Rings height={50} color="red" />
+        </div>
+      )}
     </div>
   );
 
