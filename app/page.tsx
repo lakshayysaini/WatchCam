@@ -71,8 +71,7 @@ const HomePage = (props: Props) => {
     ) {
       const predictions = await model.detect(webCamRef.current.video);
 
-      resi
-      
+      resizeCanvas(canvasRef, webCamRef);
     }
   };
 
@@ -303,3 +302,16 @@ const HomePage = (props: Props) => {
 };
 
 export default HomePage;
+function resizeCanvas(
+  canvasRef: React.RefObject<HTMLCanvasElement>,
+  webCamRef: React.RefObject<Webcam>
+) {
+  const canvas = canvasRef.current;
+  const video = webCamRef.current?.video;
+
+  if (canvas && video) {
+    const { videoWidth, videoHeight } = video;
+    canvas.width = videoWidth;
+    canvas.height = videoHeight;
+  }
+}
