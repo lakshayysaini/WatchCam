@@ -26,7 +26,8 @@ import { beep } from "@/utils/audio";
 import * as cocossd from "@tensorflow-models/coco-ssd";
 import "@tensorflow/tfjs-backend-cpu";
 import "@tensorflow/tfjs-backend-webgl";
-import { ObjectDetection } from "@tensorflow-models/coco-ssd";
+import { DetectedObject, ObjectDetection } from "@tensorflow-models/coco-ssd";
+import { drawOnCanvas } from "@/utils/draw";
 
 type Props = {};
 
@@ -69,19 +70,20 @@ const HomePage = (props: Props) => {
       webCamRef.current.video &&
       webCamRef.current.video.readyState === 4
     ) {
-      const predictions = await model.detect(webCamRef.current.video);
+      const predictions : DetectedObject[] = await model.detect(webCamRef.current.video);
 
       resizeCanvas(canvasRef, webCamRef);
+      drawOnCanvas(mirrored, predictions, canvasRef.current?.getContext("2d"));
     }
   };
 
   useEffect(() => {
     interval = setInterval(() => {
       runPredictions();
-    }, 1000);
+    }, 100);
 
     return () => clearInterval(interval);
-  }, [webCamRef.current, model]);
+  }, [webCamRef.current, model, mirrored]);
 
   return (
     <div className="flex h-screen">
