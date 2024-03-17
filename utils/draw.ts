@@ -24,11 +24,12 @@ export function drawOnCanvas(
 
       //draw stroke
       ctx.font = "12px Courier New";
+      ctx.fillStyle = "black";
       ctx.globalAlpha = 1;
 
       mirrored
-        ? ctx.fillText(name, ctx.canvas.width - x, y)
-        : ctx.fillText(name, x, y);
+        ? ctx.fillText(name, ctx.canvas.width - x - width + 10, y + 20)
+        : ctx.fillText(name, x + 10, y + 20);
     }
   });
 }
