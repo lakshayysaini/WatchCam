@@ -28,10 +28,12 @@ import "@tensorflow/tfjs-backend-cpu";
 import "@tensorflow/tfjs-backend-webgl";
 import { DetectedObject, ObjectDetection } from "@tensorflow-models/coco-ssd";
 import { drawOnCanvas } from "@/utils/draw";
+import { format } from "path";
 
 type Props = {};
 
 let interval: any = null;
+let stopTimeOut: any = null;
 
 const HomePage = (props: Props) => {
   const webCamRef = useRef<Webcam>(null);
@@ -44,6 +46,36 @@ const HomePage = (props: Props) => {
   const [volume, setVolume] = useState(0.8);
   const [model, setModel] = useState<ObjectDetection>();
   const [loading, setLoading] = useState(false);
+
+  const mediaRecorderRef = useRef<MediaRecorder | null>(null);
+
+  useEffect(() => {
+    if (webCamRef && webCamRef.current) {
+      const stream = (webCamRef.current.video as any).captureStream();
+      if (stream) {
+        mediaRecorderRef.current = new MediaRecorder(stream);
+
+        mediaRecorderRef.current.ondataavailable = (e) => {
+          if (e.data.size > 0) {
+            const recordedBlob = new Blob([e.data], { type: "video" });
+
+            const videoURL = URL.createObjectURL(recordedBlob);
+
+            const a = document.createElement("a");
+            a.href = videoURL;
+            a.download = `${formatDate(new Date())}.webm`;
+            a.click();
+          }
+        };
+        mediaRecorderRef.current.onstart = (e) => {
+          setIsRecording(true);
+        };
+        mediaRecorderRef.current.onstop = (e) => {
+          setIsRecording(false);
+        };
+      }
+    }
+  }, [webCamRef]);
 
   useEffect(() => {
     setLoading(true);
@@ -70,10 +102,23 @@ const HomePage = (props: Props) => {
       webCamRef.current.video &&
       webCamRef.current.video.readyState === 4
     ) {
-      const predictions : DetectedObject[] = await model.detect(webCamRef.current.video);
+      const predictions: DetectedObject[] = await model.detect(
+        webCamRef.current.video
+      );
 
       resizeCanvas(canvasRef, webCamRef);
       drawOnCanvas(mirrored, predictions, canvasRef.current?.getContext("2d"));
+
+      let isPerson: boolean = false;
+      if (predictions.length > 0) {
+        predictions.forEach((prediction) => {
+          isPerson = prediction.class === "person";
+        });
+
+        if (isPerson) {
+          startRecording();
+        }
+      }
     }
   };
 
@@ -190,7 +235,33 @@ const HomePage = (props: Props) => {
 
   function userPromptScreenshot() {}
 
-  function userPromptRecord() {}
+  function startRecording() {
+    if (webCamRef.current && mediaRecorderRef.current?.state !== "recording") {
+      mediaRecorderRef.current?.start();
+
+      stopTimeOut = setTimeout(() => {
+        if (mediaRecorderRef.current?.state === "recording") {
+          mediaRecorderRef.current.requestData();
+          mediaRecorderRef.current.stop();
+        }
+      }, 30000);
+    }
+  }
+
+  function userPromptRecord() {
+    if (!webCamRef.current) {
+      toast("Camera is not found. Please Refresh.");
+    }
+
+    if (mediaRecorderRef.current?.state == "recording") {
+      mediaRecorderRef.current.requestData();
+      clearTimeout(stopTimeOut);
+      mediaRecorderRef.current.stop();
+      toast("Recording Saved to downloads");
+    } else {
+      startRecording();
+    }
+  }
 
   function toggleAutoRecord() {
     if (autoRecordEnabled) {
@@ -304,6 +375,7 @@ const HomePage = (props: Props) => {
 };
 
 export default HomePage;
+
 function resizeCanvas(
   canvasRef: React.RefObject<HTMLCanvasElement>,
   webCamRef: React.RefObject<Webcam>
@@ -316,4 +388,20 @@ function resizeCanvas(
     canvas.width = videoWidth;
     canvas.height = videoHeight;
   }
+}
+
+function formatDate(d: Date) {
+  const formattedDate =
+    [
+      (d.getMonth() + 1).toString().padStart(2, "0"),
+      d.getDate().toString().padStart(2, "0"),
+      d.getFullYear(),
+    ].join("-") +
+    " " +
+    [
+      d.getHours().toString().padStart(2, "0"),
+      d.getMinutes().toString().padStart(2, "0"),
+      d.getSeconds().toString().padStart(2, "0"),
+    ].join("-");
+  return formattedDate;
 }
