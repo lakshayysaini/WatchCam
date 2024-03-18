@@ -29,6 +29,7 @@ import "@tensorflow/tfjs-backend-webgl";
 import { DetectedObject, ObjectDetection } from "@tensorflow-models/coco-ssd";
 import { drawOnCanvas } from "@/utils/draw";
 import { format } from "path";
+import SocialMediaLinks from "@/components/social-links";
 
 type Props = {};
 
@@ -115,8 +116,8 @@ const HomePage = (props: Props) => {
           isPerson = prediction.class === "person";
         });
 
-        if (isPerson) {
-          startRecording();
+        if (isPerson && autoRecordEnabled) {
+          startRecording(true);
         }
       }
     }
@@ -128,7 +129,7 @@ const HomePage = (props: Props) => {
     }, 100);
 
     return () => clearInterval(interval);
-  }, [webCamRef.current, model, mirrored]);
+  }, [webCamRef.current, model, mirrored, autoRecordEnabled]);
 
   return (
     <div className="flex h-screen">
@@ -233,11 +234,28 @@ const HomePage = (props: Props) => {
     </div>
   );
 
-  function userPromptScreenshot() {}
+  function userPromptScreenshot() {
+    // take picture
+    if(!webCamRef.current){
+      toast('Camera not found. Please refresh');
+    }else{
+      const imgSrc = webCamRef.current.getScreenshot();
+      console.log(imgSrc);
+      const blob = base64toBlob(imgSrc);
 
-  function startRecording() {
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `${formatDate(new Date())}.png`
+      a.click();
+    }
+    // save it to downloads
+
+  }
+  function startRecording(doBeep: boolean) {
     if (webCamRef.current && mediaRecorderRef.current?.state !== "recording") {
       mediaRecorderRef.current?.start();
+      doBeep && beep(volume);
 
       stopTimeOut = setTimeout(() => {
         if (mediaRecorderRef.current?.state === "recording") {
@@ -259,7 +277,7 @@ const HomePage = (props: Props) => {
       mediaRecorderRef.current.stop();
       toast("Recording Saved to downloads");
     } else {
-      startRecording();
+      startRecording(false);
     }
   }
 
@@ -363,7 +381,7 @@ const HomePage = (props: Props) => {
           <Separator />
           <li className="space-y-4">
             <strong>Share your thoughts 💬 </strong>
-            {/*<SocialMediaLinks />*/}
+            <SocialMediaLinks />
             <br />
             <br />
             <br />
@@ -404,4 +422,16 @@ function formatDate(d: Date) {
       d.getSeconds().toString().padStart(2, "0"),
     ].join("-");
   return formattedDate;
+}
+
+function base64toBlob(base64Data: any) {
+  const byteCharacters = atob(base64Data.split(",")[1]);
+  const arrayBuffer = new ArrayBuffer(byteCharacters.length);
+  const byteArray = new Uint8Array(arrayBuffer);
+
+  for (let i = 0; i < byteCharacters.length; i++) {
+    byteArray[i] = byteCharacters.charCodeAt(i);
+  }
+
+  return new Blob([arrayBuffer], { type: "image/png" }); // Specify the image type here
 }
