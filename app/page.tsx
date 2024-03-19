@@ -43,7 +43,7 @@ const HomePage = (props: Props) => {
   //states
   const [mirrored, setMirrored] = useState<boolean>(false);
   const [isRecording, setIsRecording] = useState<boolean>(false);
-  const [autoRecordEnabled, setAutoRecordEnabled] = useState<boolean>(false);
+  const [autoRecordEnabled, setAutoRecordEnabled] = useState<boolean>(true);
   const [volume, setVolume] = useState(0.8);
   const [model, setModel] = useState<ObjectDetection>();
   const [loading, setLoading] = useState(false);
