@@ -1,36 +1,31 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# WatchCam
+## Next.js 14: React Js, TypeScript, Tailwind CSS, Tensorflow, shadcn/ui
 
-## Getting Started
+A Object Detection Web App using the latest technologies: Next.js 14, React.js, TypeScript,  Tailwind CSS, tensorflow for object detection, shadcn/ui for UI components.
 
-First, run the development server:
+## About this app
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+First of all it will ask your browser about the camera permissions, then if it will detect any person in the camera, it will trigger the auto recording and a 30 second clip will get auto recorded and will be automatically download in your device.
+ 
+## Technologies Used
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+- Next.js 14
+- Reactjs
+- Tailwind CSS
+- TypeScript
+- TensorFlow
+- Shadcn/UI
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Installation
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
+To run this application locally, you'll need to have Node.js and npm installed on your machine.
 
-## Learn More
+1. Clone this repository:
+2. Navigate to the project directory: 
+3. Install dependencies: `npm install`
+4. Run the development server: `npm run dev`
+5. Open your browser and navigate to `http://localhost:3000` to view the application :)
 
-To learn more about Next.js, take a look at the following resources:
+## Contributing
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+Contributions are welcome! If you find any bugs or have suggestions for improvement, feel free to open an issue or create a pull request.
